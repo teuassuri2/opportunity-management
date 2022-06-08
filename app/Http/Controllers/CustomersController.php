@@ -18,6 +18,7 @@ class CustomersController extends Controller {
     public function __construct(CustomersService $customersService) {
         $this->customersService = $customersService;
     }
+    
 
     public function indexApi(Request $request) {
         if ($request->isMethod("post")) {

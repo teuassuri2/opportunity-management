@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UpdateVendedorRequest;
 use App\Http\Resources\UsersJsonResource;
 use App\Http\Resources\UsersResource;
-use App\Models\Users;
+use App\Models\User;
 use App\Models\Vendedor;
 use App\Services\UsersService;
 
@@ -26,6 +26,21 @@ class UsersController extends Controller {
         }
     }
 
+    public function auth(Request $request) {
+        return view('users.login');
+    }
+
+    public function authLogin(StoreUsersRequest $request) {
+        return $this->usersService->auth($request);
+    }
+
+    public function logout(Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('auth');
+    }
+
     public function index() {
         $users = $this->usersService->findAll();
         return view('users.index', ['users' => $users]);
@@ -38,7 +53,7 @@ class UsersController extends Controller {
         }
     }
 
-    public function editApi(Users $users, StoreUsersRequest $request) {
+    public function editApi(User $users, StoreUsersRequest $request) {
         if ($request->isMethod("post")) {
             $users = $this->usersService->update($users, $request->validated());
             return response()->json(new UsersJsonResource($users), 200);
@@ -52,7 +67,7 @@ class UsersController extends Controller {
         return view('users.add');
     }
 
-    public function edit(Users $users, StoreUsersRequest $request) {
+    public function edit(User $users, StoreUsersRequest $request) {
         if ($request->isMethod("post")) {
             $users = $this->usersService->update($users, $request->validated());
         }

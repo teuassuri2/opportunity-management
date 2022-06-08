@@ -2,13 +2,15 @@
 
 namespace App\Services;
 
-use App\Models\Users;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class UsersService {
+ 
+    private User $users;
 
-    private Users $users;
-
-    public function __construct(Users $users) {
+    public function __construct(User $users) {
         $this->users = $users;
     }
 
@@ -36,6 +38,16 @@ class UsersService {
         return $users;
     }
 
+    public function auth($request) {
+        if (Auth::attempt($request->validated())) {
+            return redirect('dashboard');
+        }else{
+            Session::flash('status', 'Login ou senha incorretos!'); 
+            return redirect('auth');
+        }
+        
+    }
+    
     public function findAll() {
         return $this->users->all();
     }
