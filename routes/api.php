@@ -18,9 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => 'apiJwt', 'prefix' => 'rest'], function () {
-
-    Route::post('opportunitys/index/{search?}', 'OpportunitysController@indexApi');
-    Route::post('opportunitys/edit/{id}', 'OpportunitysController@editApi');
-    
+Route::group(['prefix' => 'rest'], function () {
+    Route::get('opportunitys/index', [App\Http\Controllers\OpportunitysController::class, 'indexApi'])->name('opportunitys');
+    Route::post('opportunitys/update/{opportunitys}/{api?}', [App\Http\Controllers\OpportunitysController::class, 'updateStatus']);
 });

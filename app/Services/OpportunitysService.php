@@ -46,10 +46,15 @@ class OpportunitysService {
         }
     }
     
-    public function updateStatus(Opportunitys $opportunitys, $request) {
+    public function updateStatus(Opportunitys $opportunitys, $request, $api = false) {
         try {
             $opportunitys->status = $request->input('status');
             $opportunitys->save();
+            
+            if ($api){
+                return $opportunitys;
+            }
+            
             Session::flash('status', 'Status da Oportunidade alterado com sucesso!');
             return redirect()->route('opportunitys_update', [$opportunitys->id ]);
         } catch (Exception $exc) {
@@ -69,6 +74,10 @@ class OpportunitysService {
             $opportunitys = $this->opportunitys->where('data', '=', $request->input('data'));
         }
 
+        if (!empty($request->input('title'))) {
+            $opportunitys = $this->opportunitys->where('title', 'like', '%'.$request->input('title').'%');
+        }
+        
         return $opportunitys->where('status', 1)->get();
     }
 

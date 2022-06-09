@@ -13,5 +13,11 @@ class Products extends Model {
         'created_at',
         'updated_at',
     ];
+    
+    
+    public function Opportunitys()
+    {
+        return $this->hasMany(Opportunitys::class, 'products_id', 'id');
+    }
 
 }

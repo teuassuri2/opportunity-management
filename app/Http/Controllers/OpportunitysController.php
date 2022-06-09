@@ -20,27 +20,24 @@ class OpportunitysController extends Controller {
     private CustomersService $customersService;
     private ProductsService $productsService;
     private UsersService $usersService;
-    
+
     public function __construct(OpportunitysService $opportunitysService) {
         $this->opportunitysService = $opportunitysService;
     }
 
-    public function indexApi(Request $request, String $search) {
-        if ($request->isMethod("post")) {
-            $opportunitys = $this->opportunitysService->findAll($search);
-            return response()->json(new OpportunitysResource($opportunitys), 200);
-        }
+    public function indexApi(Request $request) {
+        return response()->json(new OpportunitysResource($this->opportunitysService->findAll($request)), 200);
     }
 
     public function index(Request $request, UsersService $usersService) {
         $opportunitys = $this->opportunitysService->findAll($request);
         $this->usersService = $usersService;
-        
+
         return view('opportunitys.index', ['opportunitys' => $opportunitys, 'users' => $this->usersService->findAll()]);
     }
 
-    public function store(Request $request, CustomersService $customersService, ProductsService $productsService) { 
-        
+    public function store(Request $request, CustomersService $customersService, ProductsService $productsService) {
+
         $this->customersService = $customersService;
         $this->productsService = $productsService;
         return view('opportunitys.store', [
@@ -48,34 +45,24 @@ class OpportunitysController extends Controller {
             'products' => $this->productsService->findAll()
         ]);
     }
-    
-    public function storeCreate(StoreOpportunitysRequest $request) { 
+
+    public function storeCreate(StoreOpportunitysRequest $request) {
         if ($request->isMethod("post")) {
-           return $this->opportunitysService->store($request->validated());
+            return $this->opportunitysService->store($request->validated());
         }
     }
-    
-    public function storeApi(StoreOpportunitysRequest $request) {
-        if ($request->isMethod("post")) {
-            $opportunitys = $this->opportunitysService->store($request->validated());
-            return response()->json(new OpportunitysJsonResource($opportunitys), 200);
-        }
-    }
-    
+
 
     public function update(Opportunitys $opportunitys) {
         return view('opportunitys.update', ['opportunitys' => $opportunitys]);
     }
-    
-    
-     public function updateStatus(Opportunitys $opportunitys, Request $request) {
-        return $this->opportunitysService->updateStatus($opportunitys, $request);
-    }
-    
 
-    public function acceptOrReject(Opportunitys $opportunitys, $option , Request $request) {
-            return $this->opportunitysService->updateAcceptOrReject($opportunitys, $option);
+    public function updateStatus(Opportunitys $opportunitys, Request $request, $api) {
+        return $this->opportunitysService->updateStatus($opportunitys, $request, $api);
     }
 
+    public function acceptOrReject(Opportunitys $opportunitys, $option, Request $request) {
+        return $this->opportunitysService->updateAcceptOrReject($opportunitys, $option);
+    }
 
 }

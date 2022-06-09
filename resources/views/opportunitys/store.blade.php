@@ -43,12 +43,12 @@
 
     <div class="col-md-8">
         <label for="title" class="form-label">Titulo da Oportunidade</label>
-        <input type="text" class="form-control" id="title" name="title" maxlength="100">
+        <input type="text" class="form-control" id="title" name="title" maxlength="100" value="{{old('title')}}">
     </div>
 
     <div class="col-md-8">
         <label for="description" class="form-label">Descrição da Oportunidade</label>
-        <input type="text" class="form-control" id="description" name="description" maxlength="45">
+        <input type="text" class="form-control" id="description" name="description" maxlength="45" value="{{old('description')}}">
     </div>
 
     <div class="col-12">
