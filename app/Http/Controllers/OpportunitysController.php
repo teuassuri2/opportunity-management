@@ -57,7 +57,7 @@ class OpportunitysController extends Controller {
         return view('opportunitys.update', ['opportunitys' => $opportunitys]);
     }
 
-    public function updateStatus(Opportunitys $opportunitys, Request $request, $api) {
+    public function updateStatus(Opportunitys $opportunitys, Request $request, $api = false) {
         return $this->opportunitysService->updateStatus($opportunitys, $request, $api);
     }
 
