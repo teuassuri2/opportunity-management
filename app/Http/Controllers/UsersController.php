@@ -19,12 +19,6 @@ class UsersController extends Controller {
         $this->usersService = $usersService;
     }
 
-    public function indexApi(Request $request) {
-        if ($request->isMethod("post")) {
-            $users = $this->usersService->findAll();
-            return response()->json(new UsersResource($users), 200);
-        }
-    }
 
     public function auth(Request $request) {
         return view('users.login');
@@ -39,49 +33,6 @@ class UsersController extends Controller {
         return $this->usersService->logout($request);
     }
 
-    public function index() {
-        $users = $this->usersService->findAll();
-        return view('users.index', ['users' => $users]);
-    }
-
-    public function storeApi(StoreUsersRequest $request) {
-        if ($request->isMethod("post")) {
-            $users = $this->usersService->store($request->validated());
-            return response()->json(new UsersJsonResource($users), 200);
-        }
-    }
-
-    public function editApi(User $users, StoreUsersRequest $request) {
-        if ($request->isMethod("post")) {
-            $users = $this->usersService->update($users, $request->validated());
-            return response()->json(new UsersJsonResource($users), 200);
-        }
-    }
-
-    public function store(StoreUsersRequest $request) {
-        if ($request->isMethod("post")) {
-            $users = $this->usersService->store($request->validated());
-        }
-        return view('users.add');
-    }
-
-    public function edit(User $users, StoreUsersRequest $request) {
-        if ($request->isMethod("post")) {
-            $users = $this->usersService->update($users, $request->validated());
-        }
-        return view('users.edit', ['dados' => $users]);
-    }
-
-    public function deleteApi(int $id) {
-        if ($request->isMethod("post")) {
-            $this->usersService->delete($id);
-            return response()->json((true), 200);
-        }
-    }
-
-    public function delete(int $id) {
-        $this->usersService->delete($id);
-        return redirect('/index');
-    }
+   
 
 }
