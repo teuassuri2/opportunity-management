@@ -25,18 +25,16 @@ class StoreOpportunitysRequest extends FormRequest {
         return [
             'title' => ['required'],
             'description' => ['required'],
-            'users_id' => ['required'],
             'customers_id' => ['required'],
             'products_id' => ['required'],];
     }
 
     public function messages() {
         return [
-            'title.required' => 'O campo é Title obrigatório',
-            'description.required' => 'O campo é Description obrigatório',
-            'users_id.required' => 'O campo é Users_id obrigatório',
-            'customers_id.required' => 'O campo é Customers_id obrigatório',
-            'products_id.required' => 'O campo é Products_id obrigatório',];
+            'title.required' => 'O campo Titulo da oportunidade é obrigatório',
+            'description.required' => 'O campo Descrição é obrigatório',
+            'customers_id.required' => 'Selecione um cliente',
+            'products_id.required' => 'Selecione um produto',];
     }
 
 }

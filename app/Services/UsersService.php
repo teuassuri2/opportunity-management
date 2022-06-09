@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use \Illuminate\Http\Request;
 
 class UsersService {
  
@@ -40,13 +41,22 @@ class UsersService {
 
     public function auth($request) {
         if (Auth::attempt($request->validated())) {
-            return redirect('dashboard');
+            return redirect('opportunitys/index');
         }else{
             Session::flash('status', 'Login ou senha incorretos!'); 
-            return redirect('auth');
+            return redirect()->route('auth');
         }
         
     }
+    
+    public function logout(Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('auth');
+    }
+    
+    
     
     public function findAll() {
         return $this->users->all();

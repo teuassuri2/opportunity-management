@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Models\Opportunitys;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use \App\Models\OpportunitysStatus;
 
 class OpportunitysService {
 
@@ -13,31 +16,60 @@ class OpportunitysService {
     }
 
     public function store(array $data) {
-        $this->opportunitys->title = $data['title'];
-        $this->opportunitys->description = $data['description'];
-        $this->opportunitys->users_id = $data['users_id'];
-        $this->opportunitys->customers_id = $data['customers_id'];
-        $this->opportunitys->products_id = $data['products_id'];
-        $this->opportunitys->save();
-        return $this->opportunitys;
-    }
 
-    public function update(Opportunitys $opportunitys, array $data) {
-        $opportunitys->title = $data['title'];
-        $opportunitys->description = $data['description'];
-        $opportunitys->users_id = $data['users_id'];
-        $opportunitys->customers_id = $data['customers_id'];
-        $opportunitys->products_id = $data['products_id'];
-        $opportunitys->save();
-        return $opportunitys;
-    }
+        try {
 
-    public function findAll($search) {
-        if (!empty($search)){
-            return $this->opportunitys->where('title','LIKE','%'.$search.'%')->get();
+            $this->opportunitys->title = $data['title'];
+            $this->opportunitys->description = $data['description'];
+            $this->opportunitys->users_id = Auth::user()->id;
+            $this->opportunitys->customers_id = $data['customers_id'];
+            $this->opportunitys->products_id = $data['products_id'];
+            $this->opportunitys->save();
+            Session::flash('status', 'Oportunidade cadastrada com sucesso!');
+            return redirect()->route('opportunitys_store');
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
         }
-        
-        return $this->opportunitys->all();
+    }
+
+    public function updateAcceptOrReject(Opportunitys $opportunitys, $option) {
+        try {
+
+            $opportunitysStatus = new OpportunitysStatus();
+            $opportunitysStatus->opportunitys_id = $opportunitys->id;
+            $opportunitysStatus->status = $option;
+            $opportunitysStatus->users_id = Auth::user()->id;
+            $opportunitysStatus->save();
+            return redirect()->route('opportunitys');
+        } catch (Exception $exc) {
+            return false;
+        }
+    }
+    
+    public function updateStatus(Opportunitys $opportunitys, $request) {
+        try {
+            $opportunitys->status = $request->input('status');
+            $opportunitys->save();
+            Session::flash('status', 'Status da Oportunidade alterado com sucesso!');
+            return redirect()->route('opportunitys_update', [$opportunitys->id ]);
+        } catch (Exception $exc) {
+            return false;
+        }
+    }
+    
+
+    public function findAll($request) {
+        $opportunitys = $this->opportunitys;
+
+        if (!empty($request->input('user_id'))) {
+            $opportunitys = $this->opportunitys->where('user_id', '=', $request->input('user_id'));
+        }
+
+        if (!empty($request->input('data'))) {
+            $opportunitys = $this->opportunitys->where('data', '=', $request->input('data'));
+        }
+
+        return $opportunitys->where('status', 1)->get();
     }
 
     public function findOne(int $id) {

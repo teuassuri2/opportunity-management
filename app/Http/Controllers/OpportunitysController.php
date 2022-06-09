@@ -10,11 +10,17 @@ use App\Http\Resources\OpportunitysResource;
 use App\Models\Opportunitys;
 use App\Models\Vendedor;
 use App\Services\OpportunitysService;
+use \App\Services\CustomersService;
+use \App\Services\ProductsService;
+use \App\Services\UsersService;
 
 class OpportunitysController extends Controller {
 
     private OpportunitysService $opportunitysService;
-
+    private CustomersService $customersService;
+    private ProductsService $productsService;
+    private UsersService $usersService;
+    
     public function __construct(OpportunitysService $opportunitysService) {
         $this->opportunitysService = $opportunitysService;
     }
@@ -26,49 +32,50 @@ class OpportunitysController extends Controller {
         }
     }
 
-    public function index() {
-        $opportunitys = $this->opportunitysService->findAll();
-        return view('opportunitys.index', ['opportunitys' => $opportunitys]);
+    public function index(Request $request, UsersService $usersService) {
+        $opportunitys = $this->opportunitysService->findAll($request);
+        $this->usersService = $usersService;
+        
+        return view('opportunitys.index', ['opportunitys' => $opportunitys, 'users' => $this->usersService->findAll()]);
     }
 
+    public function store(Request $request, CustomersService $customersService, ProductsService $productsService) { 
+        
+        $this->customersService = $customersService;
+        $this->productsService = $productsService;
+        return view('opportunitys.store', [
+            'customers' => $this->customersService->findAll(),
+            'products' => $this->productsService->findAll()
+        ]);
+    }
+    
+    public function storeCreate(StoreOpportunitysRequest $request) { 
+        if ($request->isMethod("post")) {
+           return $this->opportunitysService->store($request->validated());
+        }
+    }
+    
     public function storeApi(StoreOpportunitysRequest $request) {
         if ($request->isMethod("post")) {
             $opportunitys = $this->opportunitysService->store($request->validated());
             return response()->json(new OpportunitysJsonResource($opportunitys), 200);
         }
     }
+    
 
-    public function editApi(Opportunitys $opportunitys, StoreOpportunitysRequest $request) {
-        if ($request->isMethod("post")) {
-            $opportunitys = $this->opportunitysService->update($opportunitys, $request->validated());
-            return response()->json(new OpportunitysJsonResource($opportunitys), 200);
-        }
+    public function update(Opportunitys $opportunitys) {
+        return view('opportunitys.update', ['opportunitys' => $opportunitys]);
+    }
+    
+    
+     public function updateStatus(Opportunitys $opportunitys, Request $request) {
+        return $this->opportunitysService->updateStatus($opportunitys, $request);
+    }
+    
+
+    public function acceptOrReject(Opportunitys $opportunitys, $option , Request $request) {
+            return $this->opportunitysService->updateAcceptOrReject($opportunitys, $option);
     }
 
-    public function store(StoreOpportunitysRequest $request) {
-        if ($request->isMethod("post")) {
-            $opportunitys = $this->opportunitysService->store($request->validated());
-        }
-        return view('opportunitys.add');
-    }
-
-    public function edit(Opportunitys $opportunitys, StoreOpportunitysRequest $request) {
-        if ($request->isMethod("post")) {
-            $opportunitys = $this->opportunitysService->update($opportunitys, $request->validated());
-        }
-        return view('opportunitys.edit', ['dados' => $opportunitys]);
-    }
-
-    public function deleteApi(int $id) {
-        if ($request->isMethod("post")) {
-            $this->opportunitysService->delete($id);
-            return response()->json((true), 200);
-        }
-    }
-
-    public function delete(int $id) {
-        $this->opportunitysService->delete($id);
-        return redirect('/index');
-    }
 
 }

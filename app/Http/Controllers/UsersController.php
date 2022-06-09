@@ -34,11 +34,9 @@ class UsersController extends Controller {
         return $this->usersService->auth($request);
     }
 
-    public function logout(Request $request) {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('auth');
+    public function authLogout(Request $request) {
+        
+        return $this->usersService->logout($request);
     }
 
     public function index() {
